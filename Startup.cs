@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using ShoppiAPIDOTNET.Data;
 using ShoppiAPIDOTNET.Services;
 
@@ -21,7 +22,11 @@ namespace ShoppiAPIDOTNET
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["devConnectionString"]));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(config =>
+            config.SwaggerDoc("v1", new OpenApiInfo(){
+                Title = "Shoppi API",
+                Version ="v1"
+            }));
             services.AddAutoMapper(typeof(Startup));
 
             services.AddScoped<UserService>();
@@ -33,7 +38,8 @@ namespace ShoppiAPIDOTNET
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(config =>
+                config.SwaggerEndpoint("/swagger/v1/swagger.json", "Shoppi API"));
             }
 
             app.UseHttpsRedirection();
